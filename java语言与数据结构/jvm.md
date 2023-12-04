@@ -1,7 +1,8 @@
 ## JVM启动参数
 
 ### client/server模式
--client 
+
+-client
  设置jvm使用client模式，特点是启动速度比较快，但运行时性能和内存管理效率不高，通常用于客户端应用程序或者PC应用开发和调试。
 
 -server
@@ -17,9 +18,12 @@
 | ---- | ---------- |
 | -Xmx | 堆的最大值 |
 | -Xms | 堆的初始值 |
->java -Xms3550m -Xmx3550m  -Xmn2g   -Xss128k
+|      |            |
+|      |            |
 
--Xms3550m:设置JVM堆初始化内存大小为3550m.默认为物理内存的1/64，最小为1M；可以指定单位，比如k、m，若不指定，则默认为字节此值可以设置与-Xmx相同,以避免每次垃圾回收完成后JVM重新分配内存.  
+> java -Xms3550m -Xmx3550m  -Xmn2g   -Xss128k
+
+-Xms3550m:设置JVM堆初始化内存大小为3550m.默认为物理内存的1/64，最小为1M；可以指定单位，比如k、m，若不指定，则默认为字节此值可以设置与-Xmx相同,以避免每次垃圾回收完成后JVM重新分配内存.
 -Xmx3550m:设置JVM堆最大可用内存为3550M.默认为物理内存的1/4或者1G，最小为2M；单位与-Xms一致。
 -Xmn2g:设置年轻代大小为2G.
 
@@ -41,8 +45,7 @@ The memory flag can also be specified in different sizes, such as kilobytes, meg
 
 The `Xms` flag has no default value, and `Xmx` typically has a default value of 256 MB. A common use for these flags is when you encounter a `java.lang.OutOfMemoryError`.
 
-When using these settings, keep in mind that these settings are for the JVM's *heap*, and that the JVM can/will use more memory than just the size allocated to the heap. 
-
+When using these settings, keep in mind that these settings are for the JVM's *heap*, and that the JVM can/will use more memory than just the size allocated to the heap.
 
 ## JVM 组件
 
@@ -58,22 +61,86 @@ When using these settings, keep in mind that these settings are for the JVM's *h
 
 在 HotSpot 中，解释器和 JIT 即时编译器是同时存在的，他们是 JVM 的两个组件。对于不同类型的应用程序，用户可以根据自身的特点和需求，灵活选择是基于解释器运行还是基于 JIT 编译器运行。HotSpot 为用户提供了几种运行模式供选择，可通过参数设定，分别为：解释模式、编译模式、混合模式，HotSpot 默认是混合模式，需要注意的是编译模式并不是完全通过 JIT 进行编译，只是优先采用编译方式执行程序，但是解释器仍然要在编译无法进行的情况下介入执行过程。
 
-
 ## jvm 内存
+
+Difference between Resident Set Size (RSS) and Java total committed memory (NMT) for a JVM running in Docker container
+
+https://stackoverflow.com/questions/38597965/difference-between-resident-set-size-rss-and-java-total-committed-memory-nmt
+
+
+
+### heap layout
+
+![1701707186051](image/jvm/1701707186051.png)
+
+图自
+
+https://docs.oracle.com/javase/9/gctuning/factors-affecting-garbage-collection-performance.htm#JSGCT-GUID-6635C481-AE78-485A-A184-A1709712961A
+
+![1701707876457](image/jvm/1701707876457.png)
+
+图自
+
+https://stackoverflow.com/questions/50965967/profiling-jvm-committed-vs-used-vs-free-memory
+
+![1701708353275](image/jvm/1701708353275.png)
+
+图自
+
+https://stackoverflow.com/questions/41468670/difference-in-used-committed-and-max-heap-memory
+
+### jvm内存类型
+
 https://plumbr.io/blog/memory-leaks/why-does-my-java-process-consume-more-memory-than-xmx
 
 ```
+不准确
 Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
 ```
 
-不仅包括 java thread stack 、jvm heap、MaxPermSize，还包括 jni code、direct memory、native method stack、gc 所使用的内存 
->But besides the memory consumed by **your application, the JVM itself also needs some elbow room**. The need for it derives from several different reasons:
+heap memory+ non heap memory
 
-- Garbage collection. As you might recall, Java is a garbage-collected language. In order for the garbage collector to know which objects are eligible for collection, it needs to keep track of the object graphs. So this is one part of the memory lost to this internal bookkeeping. [G1](https://plumbr.io/handbook/garbage-collection-algorithms-implementations#g1) is especially known for its excessive appetite for additional memory, so be aware of this.
-- JIT optimization. Java Virtual Machine optimizes the code during runtime. Again, to know which parts to optimize it needs to keep track of the execution of certain code parts. So again, you are going to lose memory.
-- Off-heap allocations. If you happen to use off-heap memory, for example while using direct or mapped [ByteBuffers](http://docs.oracle.com/javase/7/docs/api/index.html?java/nio/ByteBuffer.html) yourself or via some clever 3rd party API then voila – you are extending your heap to something you actually cannot control via JVM configuration.
-- JNI code. When you are using native code, for example in the format of [Type 2](http://en.wikipedia.org/wiki/JDBC_driver#Type_2_Driver_-_Native-API_Driver) database drivers, then again you are loading code in the native memory.
-- Metaspace. If you are an early adopter of Java 8, you are using metaspace instead of the good old permgen to store class declarations. This is unlimited and in a native part of the JVM.
+non heap memory:
+
+* java thread stack + native method stack
+* Metaspace (MaxPermSize)
+  If you are an early adopter of Java 8, you are using metaspace instead of the good old permgen to store class declarations. This is unlimited and in a native part of the JVM.
+* jit (code cache)
+
+The Just-In-Time (JIT) compiler stores its output in the code cache area. A JIT compiler compiles bytecode to native code for frequently executed sections, aka Hotspots. The tiered compilation, introduced in Java 7, is the means by which the client compiler (C1) compiles code with instrumentation, and then, the server compiler (C2) uses the profiled data to compile that code in an optimized manner. The goal of the tiered compilation is to mix C1 and C2 compilers to have both fast startup times and good long-term performance. Tiered compilation increases the amount of code that needs to be cached in memory by up to four times. Since Java 8, this is enabled by default for JIT, although we still can disable tiered compilation.
+
+JIT optimization. Java Virtual Machine optimizes the code during runtime. Again, to know which parts to optimize it needs to keep track of the execution of certain code parts. So again, you are going to lose memory.
+
+* direct memory
+
+If you happen to use off-heap memory, for example while using direct or mapped [ByteBuffers](http://docs.oracle.com/javase/7/docs/api/index.html?java/nio/ByteBuffer.html) yourself or via some clever 3rd party API then voila – you are extending your heap to something you actually cannot control via JVM configuration.
+
+* gc 所使用的内存
+
+As you might recall, Java is a garbage-collected language. In order for the garbage collector to know which objects are eligible for collection, it needs to keep track of the object graphs. So this is one part of the memory lost to this internal bookkeeping. [G1](https://plumbr.io/handbook/garbage-collection-algorithms-implementations#g1) is especially known for its excessive appetite for additional memory, so be aware of this.
+
+* symbol
+
+stores symbols such as field names, method signatures, and interned strings.
+The JVM uses the Symbol area to store symbols such as field names, method signatures, and interned strings. In the Java development kit (JDK), symbols are stored in three different tables:
+
+The System Dictionary contains all the loaded type information like Java classes.
+The Constant Pool uses the Symbol Table data structure to save loaded symbols for classes, methods, fields, and enumerable types. The JVM maintains a per-type constant pool called the Run-Time Constant Pool, which contains several kinds of constants, ranging from compile-time numeric literals to runtime methods and even field references.
+The String Table contains the reference to all the constant strings, also referred to as interned strings.
+
+* JNI
+
+#### Native Memory Track (NMT工具)
+
+https://www.baeldung.com/java-memory-beyond-heap
+
+![1701704345047](image/jvm/1701704345047.png)
+
+“reserved” memory means the total address range pre-mapped via *malloc* or  *mmap* , so it is the maximum addressable memory for this area.
+
+“committed” means the memory actively in use.
+
+![1701709831030](image/jvm/1701709831030.png)
 
 ### 栈内存 堆内存
 
@@ -97,8 +164,7 @@ Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
 运行时常量池：是方法区的一部分，Class文件除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池，用于存放编译器生成的各种符号引用，这部分内容将在类加载后放到方法区的运行时常量池中。
 
 2. **Java堆** (线程共享)
-    ![1568551759856](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568551759856.png)
-
+   ![1568551759856](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568551759856.png)
 3. Java虚拟机栈（线程独立）
 
   每个线程都是一个代码执行流，需要栈维护函数正常调用过程。每个线程必须有一个独立栈空间。![1568552820791](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568552820791.png)
@@ -111,24 +177,22 @@ Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
 
   ![1568553007044](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568553007044.png)
 
-
 ## ClassLoader 类加载机制
 
 1. ClassLoader是Java运行时系统组件，负责在运行时查找和载入类字节码文件。类被装入JVM经过以下步骤：**装载->解析->初始化**
-    JVM在运行时生成三个ClassLoader对象，
+   JVM在运行时生成三个ClassLoader对象，
 
-  | 装载器                         | 功能                     | 关系                               |
-  | ------------------------------ | :----------------------- | ---------------------------------- |
-  | Bootstrap ClassLoader 根装载器 | 装载JRE核心类库 rt.jar等 | C++语言实现，不是ClassLoader的子类 |
-  | ExtClassLoader 扩展类加载器    | 装载JRE扩展目录下JAR类包 | 父类是根装载器                     |
-  | AppClassLoader 应用类加载器    | 装载ClassPath下类包      | 父类是ExtClassLoader               |
+| 装载器                         | 功能                     | 关系                               |
+| ------------------------------ | :----------------------- | ---------------------------------- |
+| Bootstrap ClassLoader 根装载器 | 装载JRE核心类库 rt.jar等 | C++语言实现，不是ClassLoader的子类 |
+| ExtClassLoader 扩展类加载器    | 装载JRE扩展目录下JAR类包 | 父类是根装载器                     |
+| AppClassLoader 应用类加载器    | 装载ClassPath下类包      | 父类是ExtClassLoader               |
 
-  1. 根装载器  装载JRE核心类库 rt.jar等
-  2. ExtClassLoader 扩展类加载器  装载JRE扩展目录下JAR类包
-  3. AppClassLoader 应用类加载器  装载ClassPath下类包
-  4. 自定义的类加载器必须调用getSystemClassLoader()将AppClassLoader作为父类加载器（即存在一种依赖关系）。
-
-2. 全盘负责委托机制
+1. 根装载器  装载JRE核心类库 rt.jar等
+2. ExtClassLoader 扩展类加载器  装载JRE扩展目录下JAR类包
+3. AppClassLoader 应用类加载器  装载ClassPath下类包
+4. 自定义的类加载器必须调用getSystemClassLoader()将AppClassLoader作为父类加载器（即存在一种依赖关系）。
+5. 全盘负责委托机制
 
    ClassLoader使用的是双亲委托模型来搜索类的，每个ClassLoader实例都有一个父类加载器的引用（不是继承的关系，是一个包含的关系），虚拟机内置的类加载器（Bootstrap ClassLoader）本身没有父类加载器，但可以用作其它ClassLoader实例的的父类加载器。当一个ClassLoader实例需要加载某个类时，它会试图亲自搜索某个类之前，先把这个任务委托给它的父类加载器，这个过程是由上至下依次检查的，首先由最顶层的类加载器Bootstrap ClassLoader试图加载，如果没加载到，则把任务转交给Extension ClassLoader试图加载，如果也没加载到，则转交给App ClassLoader 进行加载，如果它也没有加载得到的话，则返回给委托的发起者，由它到指定的文件系统或网络等URL中加载该类。如果它们都没有加载到这个类时，则抛出ClassNotFoundException异常。否则将这个找到的类生成一个类的定义，并将它加载到内存当中，最后返回这个类在内存中的Class实例对象。
 
@@ -137,15 +201,13 @@ Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
    避免重复加载 + 避免核心类篡改
 
    采用双亲委派模式的是好处是Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。
-
-3. 重要方法
-    Class loadClass(String name)
-    Class defineClass(String name, byte[] b, int off, int len)
-    Class findSystemClass(String name)
-    Class findLoadedClass(String name)
-    Class getParent()
-
-4. 类的唯一性
+6. 重要方法
+   Class loadClass(String name)
+   Class defineClass(String name, byte[] b, int off, int len)
+   Class findSystemClass(String name)
+   Class findLoadedClass(String name)
+   Class getParent()
+7. 类的唯一性
 
 类的唯一性与其classLoader有关，全限定类名+ClassLoader实例都相同才认为同一个类。会出现两个不同classLoader 加载同一个类文件的情况，jvm判定时会认为不是同一个
 
@@ -155,13 +217,13 @@ Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
 
 ### 判读对象是否被回收
 
-1.  引用计数算法：判断对象的引用数量
+1. 引用计数算法：判断对象的引用数量
 
-      　　引用计数算法是通过判断对象的引用数量来决定对象是否可以被回收。
+   　　引用计数算法是通过判断对象的引用数量来决定对象是否可以被回收。
 
-      　　引用计数算法是垃圾收集器中的早期策略。在这种方法中，堆中的每个对象实例都有一个引用计数。当一个对象被创建时，且将该对象实例分配给一个引用变量，该对象实例的引用计数设置为 1。当任何其它变量被赋值为这个对象的引用时，对象实例的引用计数加 1（a = b，则b引用的对象实例的计数器加 1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数减 1。特别地，当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器均减 1。任何引用计数为0的对象实例可以被当作垃圾收集。
+   　　引用计数算法是垃圾收集器中的早期策略。在这种方法中，堆中的每个对象实例都有一个引用计数。当一个对象被创建时，且将该对象实例分配给一个引用变量，该对象实例的引用计数设置为 1。当任何其它变量被赋值为这个对象的引用时，对象实例的引用计数加 1（a = b，则b引用的对象实例的计数器加 1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数减 1。特别地，当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器均减 1。任何引用计数为0的对象实例可以被当作垃圾收集。
 
-      　　引用计数收集器可以很快的执行，并且交织在程序运行中，对程序需要不被长时间打断的实时环境比较有利，但其很难解决对象之间相互循环引用的问题。如下面的程序和示意图所示，对象objA和objB之间的引用计数永远不可能为 0，那么这两个对象就永远不能被回收。
+   　　引用计数收集器可以很快的执行，并且交织在程序运行中，对程序需要不被长时间打断的实时环境比较有利，但其很难解决对象之间相互循环引用的问题。如下面的程序和示意图所示，对象objA和objB之间的引用计数永远不可能为 0，那么这两个对象就永远不能被回收。
    ![1570877824415](jvm.assets/1570877824415.png)
 
 2、 可达性分析算法：判断对象的引用链是否可达
@@ -211,9 +273,9 @@ Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
 分为4个步骤：
 
 1. 初始标记：STW 标记GC Roots 能直接关联到的对象，很快
-2. 并发标记： GC Roots Tracing，与工作线程同时进行 
+2. 并发标记： GC Roots Tracing，与工作线程同时进行
 3. 重新标记:   修正并发标记期间因为用户程序继续运行而导致产生变动的那部分对象的标记记录，停顿时间比初始标记稍长，远比并发标记时间短。
-4. 并发清除：与工作线程同时进行 
+4. 并发清除：与工作线程同时进行
 
 整个过程耗时最长的并发标记和并发清除过程收集器线程都可以与用户线程一起工作。所以，从总体上来说，CMS收集器内存回收过程与用户线程一起并发执行。
 
