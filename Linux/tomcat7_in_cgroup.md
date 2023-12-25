@@ -43,8 +43,8 @@ total_unevictable 0
 
 rss+mapped_file =75MB  完全不等于
 
-* top命令输出res
-* ps命令输出 rss  180692
+* top命令输出的res
+* ps命令输出的rss  180692
 
 ```bash
 USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND

@@ -67,8 +67,6 @@ Difference between Resident Set Size (RSS) and Java total committed memory (NMT)
 
 https://stackoverflow.com/questions/38597965/difference-between-resident-set-size-rss-and-java-total-committed-memory-nmt
 
-
-
 ### heap layout
 
 ![1701707186051](image/jvm/1701707186051.png)
@@ -141,6 +139,13 @@ https://www.baeldung.com/java-memory-beyond-heap
 “committed” means the memory actively in use.
 
 ![1701709831030](image/jvm/1701709831030.png)
+
+stackoverflow讨论 nmt只统计到了jvm 各内存区域 commited 大小，未统计到used大小，所以nmt 统计的commited 总大小 和其他指令统计的RSS 有区别
+
+https://stackoverflow.com/questions/38597965/difference-between-resident-set-size-rss-and-java-total-committed-memory-nmt
+
+
+
 
 ### 栈内存 堆内存
 
