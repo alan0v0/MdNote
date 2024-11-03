@@ -32,7 +32,7 @@ ByteChannel extends ReadableByteChannel
 
 #### Buffer
 
-![image-20220821001647834](base.assets/image-20220821001647834.png)
+![](base.assets/image-20220821001647834.png)
 
 Java nio api使用Buffer作为数据容器，读操作时，将内核数据拷贝到Buffer中，写操作时 将Buffer数据拷贝到内核空间。
 

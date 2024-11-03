@@ -7,7 +7,7 @@
 Java安全框架，相比Spring Security的功能强大，Shiro小而简单，基本满足大部分项目需求。
 Shiro 支持JavaSE、JavaEE，也就是说Shiro的功能实现不依赖运行环境的基础设施。Shiro可实现身份认证、授权、会话管理、与Web集成、缓存等功能。
 
-![enter image description here](http://wiki.jikexueyuan.com/project/shiro/images/1.png)
+![](http://wiki.jikexueyuan.com/project/shiro/images/1.png)
 
 **Authentication**：身份认证 / 登录，验证用户是不是拥有相应的身份；
 

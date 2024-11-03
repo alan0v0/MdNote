@@ -35,7 +35,7 @@ org.springframework.context.annotation.internalRequiredAnnotationProcessor -> {R
  org.springframework.context.event.internalEventListenerProcessor -> {RootBeanDefinition@1836} "Root bean: class [org.springframework.context.event.EventListenerMethodProcessor]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null"
 ```
 
-![image-20220228234511256](spring_assets/image-20220228234511256.png)
+![](spring_assets/image-20220228234511256.png)
 
 
 
@@ -158,15 +158,15 @@ public interface FactoryBean<T> {
 
 > **将相同逻辑的重复代码横向抽取出来，使用动态代理技术将这些重复代码织入到目标对象方法中，实现和原来一样的功能**。
 
-![1566539062795](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539062795.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539062795.png)
 
-![1566539123403](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539123403.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539123403.png)
 
-![1566539157609](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539157609.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539157609.png)
 
-![1566539215938](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539215938.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539215938.png)
 
-![1566539232982](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539232982.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566539232982.png)
 
 
 
@@ -174,11 +174,11 @@ public interface FactoryBean<T> {
 
 > Spring AOP 只对方法进行了增强
 
-![1566538164467](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566538164467.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566538164467.png)
 
-![1566538316652](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566538316652.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566538316652.png)
 
-![1566538338409](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566538338409.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1566538338409.png)
 
 ## AOP基本术语
 
@@ -223,11 +223,11 @@ public interface FactoryBean<T> {
 
 
 
-![1568949370667](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568949370667.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568949370667.png)
 
 行实际的处理。 在Spring MVC中， DispatcherServlet就是前端控制器。 
 
-![1568949296386](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568949296386.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568949296386.png)
 
 ### 涉及的主要类
 
@@ -257,7 +257,7 @@ public interface FactoryBean<T> {
 </listener>
 ```
 root 容器一般创建、管理sevice 层、DAO层、 dataSource等Bean，用于全局共享。每个servlet 的独自 IOC容器将其作为父容器，可使用其中的bean。
-![enter image description here](https://user-gold-cdn.xitu.io/2018/12/8/1678bc7b61df1c4f?imageslim)
+![](https://user-gold-cdn.xitu.io/2018/12/8/1678bc7b61df1c4f?imageslim)
 
 ### 子容器
 SpringMVC DispatchServlet内部会初始化自己的IOC 容器，并从ServletContext处获取全局的IOC容器，将其作为自己的父容器，子容器的配置文件在<servlet>标签内部通过<init-param>指定。一般在springMVC-context.xml 装配controller 层的bean。
@@ -299,9 +299,9 @@ https://zhuanlan.zhihu.com/p/24293062
 
 ### 事务传播行为
 
-![1572850842565](spring.assets/1572850842565.png)
+![](spring.assets/1572850842565.png)
 
-![1572850872351](spring.assets/1572850872351.png)
+![](spring.assets/1572850872351.png)
 
 ### 声明式事务
 
@@ -311,9 +311,9 @@ https://zhuanlan.zhihu.com/p/24293062
 
 2. @Transactional 注解 
 
-   ![1572851280026](spring.assets/1572851280026.png)
+   ![](spring.assets/1572851280026.png)
 
-![1572851458395](spring.assets/1572851458395.png)
+![](spring.assets/1572851458395.png)
 
 
 

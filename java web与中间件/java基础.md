@@ -19,7 +19,7 @@ Java基础、Java IO（序列化、BIO、NIO、AIO）、Java并发（同步控�
 
 **byte（字节型）**、**char（字符型）**、short（短整型）、int（整型）、long（长整型）、float（单精度浮点型）、double（双精度浮点型）、boolean（布尔型）
 
-![1568947543246](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568947543246.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568947543246.png)
 
 ## 修饰符/关键字
 

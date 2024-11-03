@@ -2,7 +2,7 @@
 
 ![](https://lh3.googleusercontent.com/-LVus1CPUCKNEaOlXLyPbEn6KIjnxG34l6hnx9cPeD1V4HB3k-hsgE2eF9Ku3MLp7akV-V0zV10 "集合框架")
 ![](https://lh3.googleusercontent.com/7i0huYRsrLpRQsoCmzY4yxk-qOj0dYcZZQeVXpOIg7uf5dazUQmS0uzXkTbKQRbpaMSgRqVvkd0 "collection framework")
-![enter image description here](https://banner2.kisspng.com/20180626/eyg/kisspng-java-collections-framework-iterator-class-hierarchy-5b323ac34302e3.6761886015300184992745.jpg)
+![](https://banner2.kisspng.com/20180626/eyg/kisspng-java-collections-framework-iterator-class-hierarchy-5b323ac34302e3.6761886015300184992745.jpg)
 
 
 ## Collection
@@ -117,7 +117,7 @@ void push(E e);
 ```
 
 ### Map 
-![enter image description here](https://awps-assets.meituan.net/mit-x/blog-images-bundle-2016/f7fe16a2.png)
+![](https://awps-assets.meituan.net/mit-x/blog-images-bundle-2016/f7fe16a2.png)
 1. Map\<k,v>接口
 ```
 V put(K key, V value);
@@ -221,7 +221,7 @@ ReentranceLock、BlockingQueue 都主要使用park方法阻塞线程。park方�
 
    wait方法（此时已经在同步代码块中）使线程进入waiting 状态，当notify方法被调用时，某一个waiting线程进入blocked状态，等待持锁线程释放锁。似乎只有这种场景线程会出现blocked状态。
 
-![BLOCKED Vs WAITING States In Java](java集合与多线程_assets/WaitingVsBlocked.png)
+![](java集合与多线程_assets/WaitingVsBlocked.png)
 
 参考文章
 
@@ -427,7 +427,7 @@ static void setDefaultUncaughtExceptionHandler(); //静态方法，为所有线�
 
 2. jvm 运行会起五个线程
 
-![1572619458836](java集合与多线程.assets/1572619458836.png)
+![](java集合与多线程.assets/1572619458836.png)
 
 ### Future Callable
 
@@ -439,7 +439,7 @@ interface Callable<V>{
 
 interface Future<V> {}
 ```
-![1568975104534](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568975104534.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568975104534.png)
 
 ## FutureTask<V>
 
@@ -465,7 +465,7 @@ interface Future<V> {}
 
 阻塞队列 BlockingQueue接口
 
-![1568969385742](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568969385742.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568969385742.png)
 
 ```java
 puts操作
@@ -529,7 +529,7 @@ public ThreadPoolExecutor(
 
 1. 线程池的工作顺序
 
-![1569424198288](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1569424198288.png)
+![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1569424198288.png)
 
 > If fewer than corePoolSize threads are running, the Executor always prefers adding a new thread rather than queuing.
 > If corePoolSize or more threads are running, the Executor always prefers queuing a request rather than adding a new thread.
@@ -539,7 +539,7 @@ corePoolSize -> 任务队列 -> maximumPoolSize -> 拒绝策略
 
 ### 如何正确使用线程池
 
-![1572510140365](java集合与多线程.assets/1572510140365.png)
+![](java集合与多线程.assets/1572510140365.png)
 
 1. 避免使用无界队列
 
@@ -643,7 +643,7 @@ Atomic成员分为四大块
 - AtomicInteger：原子更新整型
 - AtomicLong：原子更新长整型
 
-![1570968580524](java集合与多线程.assets/1570968580524.png)
+![](java集合与多线程.assets/1570968580524.png)
 
 ### Unsafe 类
 

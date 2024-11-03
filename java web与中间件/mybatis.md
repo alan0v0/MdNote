@@ -14,7 +14,7 @@ generator多次运行生成的Mapper 文件包含**重复内容，必须去除**
 
 ## 配置
 
-![enter image description here](https://lh3.googleusercontent.com/L54s1IJeiIgqm3lq3mxrREV-7yXcniardJYu2p0bz5QXkZVPoTy2Q1LiW66wLiYkt1kYFILB1Q6g)
+![](https://lh3.googleusercontent.com/L54s1IJeiIgqm3lq3mxrREV-7yXcniardJYu2p0bz5QXkZVPoTy2Q1LiW66wLiYkt1kYFILB1Q6g)
 
 MyBatis应用程序以一个实现了SqlSessionFactory（接口）的实例为核心，通过builder设计模式生成实例，一般由SqlSessionFactoryBuilder实例通过xml配置文件或者Configuration类实例 构建SqlSessionFactory实例。
 

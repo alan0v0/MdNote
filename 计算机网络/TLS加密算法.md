@@ -48,7 +48,7 @@
 参考链接：
 1.[http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html](http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html)
 2.[https://segmentfault.com/a/1190000002554673](https://segmentfault.com/a/1190000002554673)
-![enter image description here](assets/TLS建立过程.png)
+![](assets/TLS建立过程.png)
 
 * 加密摘要算法 ？ 跟非对称加密什么关系？
   **MD5、SHA**

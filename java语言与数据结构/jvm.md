@@ -53,7 +53,7 @@ When using these settings, keep in mind that these settings are for the JVM's *h
 2. 垃圾收集器
 3. 执行引擎 （解释器  JIT 即时编译器？）
 
-![1570944352976](jvm.assets/1570944352976.png)
+![](jvm.assets/1570944352976.png)
 
 当虚拟机发现某个方法或代码块的运行特别频繁时，就会把这些代码认定为“热点代码”。
 
@@ -69,19 +69,19 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 
 ### heap layout
 
-![1701707186051](image/jvm/1701707186051.png)
+![](image/jvm/1701707186051.png)
 
 图自
 
 https://docs.oracle.com/javase/9/gctuning/factors-affecting-garbage-collection-performance.htm#JSGCT-GUID-6635C481-AE78-485A-A184-A1709712961A
 
-![1701707876457](image/jvm/1701707876457.png)
+![](image/jvm/1701707876457.png)
 
 图自
 
 https://stackoverflow.com/questions/50965967/profiling-jvm-committed-vs-used-vs-free-memory
 
-![1701708353275](image/jvm/1701708353275.png)
+![](image/jvm/1701708353275.png)
 
 图自
 
@@ -132,13 +132,13 @@ The String Table contains the reference to all the constant strings, also referr
 
 https://www.baeldung.com/java-memory-beyond-heap
 
-![1701704345047](image/jvm/1701704345047.png)
+![](image/jvm/1701704345047.png)
 
 “reserved” memory means the total address range pre-mapped via *malloc* or  *mmap* , so it is the maximum addressable memory for this area.
 
 “committed” means the memory actively in use.
 
-![1701709831030](image/jvm/1701709831030.png)
+![](image/jvm/1701709831030.png)
 
 stackoverflow讨论 nmt只统计到了jvm 各内存区域 commited 大小，未统计到used大小，所以nmt 统计的commited 总大小 和其他指令统计的RSS 有区别
 
@@ -158,7 +158,7 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 ### Java 运行内存模型
 
 [reference tutorial](https://www.journaldev.com/2856/java-jvm-memory-model-memory-management-in-java#comments)
-![内存模型](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9kMmgwY3g5N3Rqa3MycC5jbG91ZGZyb250Lm5ldC9ibG9ncy93cC1jb250ZW50L3VwbG9hZHMvc2l0ZXMvMi8yMDE4LzA1L0pWTS1BcmNoaXRlY3R1cmUucG5n)
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9kMmgwY3g5N3Rqa3MycC5jbG91ZGZyb250Lm5ldC9ibG9ncy93cC1jb250ZW50L3VwbG9hZHMvc2l0ZXMvMi8yMDE4LzA1L0pWTS1BcmNoaXRlY3R1cmUucG5n)
 
 1. **方法区**(线程共享)
 
@@ -169,18 +169,18 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 运行时常量池：是方法区的一部分，Class文件除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池，用于存放编译器生成的各种符号引用，这部分内容将在类加载后放到方法区的运行时常量池中。
 
 2. **Java堆** (线程共享)
-   ![1568551759856](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568551759856.png)
+   ![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568551759856.png)
 3. Java虚拟机栈（线程独立）
 
-  每个线程都是一个代码执行流，需要栈维护函数正常调用过程。每个线程必须有一个独立栈空间。![1568552820791](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568552820791.png)
+  每个线程都是一个代码执行流，需要栈维护函数正常调用过程。每个线程必须有一个独立栈空间。![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568552820791.png)
 
 4. 本地方法栈
 
-  ![1568552981249](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568552981249.png)
+  ![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568552981249.png)
 
 5. 程序计数器
 
-  ![1568553007044](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568553007044.png)
+  ![](C:\Users\ECUST\AppData\Roaming\Typora\typora-user-images\1568553007044.png)
 
 ## ClassLoader 类加载机制
 
@@ -229,7 +229,7 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
    　　引用计数算法是垃圾收集器中的早期策略。在这种方法中，堆中的每个对象实例都有一个引用计数。当一个对象被创建时，且将该对象实例分配给一个引用变量，该对象实例的引用计数设置为 1。当任何其它变量被赋值为这个对象的引用时，对象实例的引用计数加 1（a = b，则b引用的对象实例的计数器加 1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数减 1。特别地，当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器均减 1。任何引用计数为0的对象实例可以被当作垃圾收集。
 
    　　引用计数收集器可以很快的执行，并且交织在程序运行中，对程序需要不被长时间打断的实时环境比较有利，但其很难解决对象之间相互循环引用的问题。如下面的程序和示意图所示，对象objA和objB之间的引用计数永远不可能为 0，那么这两个对象就永远不能被回收。
-   ![1570877824415](jvm.assets/1570877824415.png)
+   ![](jvm.assets/1570877824415.png)
 
 2、 可达性分析算法：判断对象的引用链是否可达
 
@@ -255,7 +255,7 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 
 **4、分代收集算法**
 
-![1570877993043](jvm.assets/1570877993043.png)
+![](jvm.assets/1570877993043.png)
 
 ### 垃圾回收器
 
@@ -269,7 +269,7 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 6. **CMS**(Concurrent Mark Sweep)收集器（**标记-清除算法**）： **老年代并行收集器**，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。
 7. G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。
 
-![1570878225270](jvm.assets/1570878225270.png)
+![](jvm.assets/1570878225270.png)
 
 ### CMS 收集器（Concurrent Mark Sweep ）标记-清除算法
 
@@ -288,9 +288,9 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 
 > -XX:+PrintGCDetails 输出GC的详细日志
 
-![1571321993174](jvm.assets/1571321993174.png)
+![](jvm.assets/1571321993174.png)
 
-![1571322030517](jvm.assets/1571322030517.png)
+![](jvm.assets/1571322030517.png)
 
 ### 内存分配与回收策略
 

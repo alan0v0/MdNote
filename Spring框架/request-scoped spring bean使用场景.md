@@ -4,13 +4,13 @@
 
 我们组内大量使用 scope类型为Request的spring bean（即request-scoped spring bean）处理业务逻辑。简易模型如图所示,调用关系大致是 servlet ->executor->processor->dao。其中servlet实例生命周期与应用一致，可以看作是“singleton”类型。然后包含业务逻辑代码的executor, processor bean 作用域是request类型，处理数据持久化的Dao bean的作用域为“singleton”。
 
-![image-20201217221204643](request-scoped spring bean使用场景_assets/image-20201217221204643.png)
+![](request-scoped spring bean使用场景_assets/image-20201217221204643.png)
 
 一开始我也不理解为啥使用 request scope，是为了保证线程安全吗？如果 executor processor 内部是有状态的，那每来一个http 请求，我们为它生产专属的bean，确实可以保证每个请求之间互不干扰，不影响各自的状态，这是request scope bean的明显优点。但是这样同时带来一些劣势，那就是 spring ioc container 会频繁地实例化对象，并在请求处理完后（一小段时间）释放对象，导致大量生命周期极短的bean出现，可以导致gc 频繁工作，给请求的响应时间带来负影响。
 
 与组长交流后，得知request scope所带来线程安全不是他们考虑使用request-scoped bean构建应用的主要原因， 真正的原因是利用 request scope的特点，让spring ioc container为每个请求构建一个独立的context 上下文。下图展示更完整点的模型图。
 
-![image-20201217221251051](request-scoped spring bean使用场景_assets/image-20201217221251051.png)
+![](request-scoped spring bean使用场景_assets/image-20201217221251051.png)
 
 该图与上图主要区别是多了一个 request-scoped bean，Context。可以先简单认为是一个Map对象，可以存放键值对，我们在这里存放所有跟这次 http请求有关的上下文信息，比如本次被调用的方法名称、客户端的服务名，ip地址、一些请求头metadata数据。
 
