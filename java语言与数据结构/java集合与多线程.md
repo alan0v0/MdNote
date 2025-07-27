@@ -427,7 +427,7 @@ static void setDefaultUncaughtExceptionHandler(); //静态方法，为所有线�
 
 2. jvm 运行会起五个线程
 
-![](java集合与多线程.assets/1572619458836.png)
+![](assets/1572619458836.png)
 
 ### Future Callable
 
@@ -539,7 +539,7 @@ corePoolSize -> 任务队列 -> maximumPoolSize -> 拒绝策略
 
 ### 如何正确使用线程池
 
-![](java集合与多线程.assets/1572510140365.png)
+![](assets/1572510140365.png)
 
 1. 避免使用无界队列
 
@@ -643,7 +643,7 @@ Atomic成员分为四大块
 - AtomicInteger：原子更新整型
 - AtomicLong：原子更新长整型
 
-![](java集合与多线程.assets/1570968580524.png)
+![](assets/1570968580524.png)
 
 ### Unsafe 类
 

@@ -53,7 +53,7 @@ When using these settings, keep in mind that these settings are for the JVM's *h
 2. 垃圾收集器
 3. 执行引擎 （解释器  JIT 即时编译器？）
 
-![](jvm.assets/1570944352976.png)
+![](assets/1570944352976.png)
 
 当虚拟机发现某个方法或代码块的运行特别频繁时，就会把这些代码认定为“热点代码”。
 
@@ -69,19 +69,19 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 
 ### heap layout
 
-![](image/jvm/1701707186051.png)
+![](assets/1701707186051.png)
 
 图自
 
 https://docs.oracle.com/javase/9/gctuning/factors-affecting-garbage-collection-performance.htm#JSGCT-GUID-6635C481-AE78-485A-A184-A1709712961A
 
-![](image/jvm/1701707876457.png)
+![](assets/1701707876457.png)
 
 图自
 
 https://stackoverflow.com/questions/50965967/profiling-jvm-committed-vs-used-vs-free-memory
 
-![](image/jvm/1701708353275.png)
+![](assets/1701708353275.png)
 
 图自
 
@@ -132,13 +132,13 @@ The String Table contains the reference to all the constant strings, also referr
 
 https://www.baeldung.com/java-memory-beyond-heap
 
-![](image/jvm/1701704345047.png)
+![](assets/1701704345047.png)
 
 “reserved” memory means the total address range pre-mapped via *malloc* or  *mmap* , so it is the maximum addressable memory for this area.
 
 “committed” means the memory actively in use.
 
-![](image/jvm/1701709831030.png)
+![](assets/1701709831030.png)
 
 stackoverflow讨论 nmt只统计到了jvm 各内存区域 commited 大小，未统计到used大小，所以nmt 统计的commited 总大小 和其他指令统计的RSS 有区别
 
@@ -221,29 +221,39 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 参考博客：**很全面** https://blog.csdn.net/justloveyou_/article/details/71216049
 
 ### 判读对象是否被回收
+引用计数算法：通过判断对象的引用数量来决定对象是否可以被回收。
 
-1. 引用计数算法：判断对象的引用数量
+引用计数算法是垃圾收集器中的早期策略。在这种方法中，堆中的每个对象实例都有一个引用计数。当一个对象被创建时，且将该对象实例分配给一个引用变量，该对象实例的引用计数设置为 1。当任何其它变量被赋值为这个对象的引用时，对象实例的引用计数加 1（a = b，则b引用的对象实例的计数器加 1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数减 1。特别地，当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器均减 1。任何引用计数为0的对象实例可以被当作垃圾收集。
 
-   　　引用计数算法是通过判断对象的引用数量来决定对象是否可以被回收。
+引用计数收集器可以很快的执行，并且交织在程序运行中，对程序需要不被长时间打断的实时环境比较有利，但其很难解决对象之间相互循环引用的问题。如下面的程序和示意图所示，对象objA和objB之间的引用计数永远不可能为 0，那么这两个对象就永远不能被回收。
+![](assets/1570877824415.png)
 
-   　　引用计数算法是垃圾收集器中的早期策略。在这种方法中，堆中的每个对象实例都有一个引用计数。当一个对象被创建时，且将该对象实例分配给一个引用变量，该对象实例的引用计数设置为 1。当任何其它变量被赋值为这个对象的引用时，对象实例的引用计数加 1（a = b，则b引用的对象实例的计数器加 1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数减 1。特别地，当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器均减 1。任何引用计数为0的对象实例可以被当作垃圾收集。
+ 可达性分析算法：通过判断对象的引用链是否可达来决定对象是否可以被回收。
 
-   　　引用计数收集器可以很快的执行，并且交织在程序运行中，对程序需要不被长时间打断的实时环境比较有利，但其很难解决对象之间相互循环引用的问题。如下面的程序和示意图所示，对象objA和objB之间的引用计数永远不可能为 0，那么这两个对象就永远不能被回收。
-   ![](jvm.assets/1570877824415.png)
+可达性分析算法是从离散数学中的图论引入的，程序把所有的引用关系看作一张图，通过一系列的名为 “GC Roots” 的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为引用链（Reference Chain）。当一个对象到 GC Roots 没有任何引用链相连（用图论的话来说就是从 GC Roots 到这个对象不可达）时，则证明此对象是不可用的。
 
-2、 可达性分析算法：判断对象的引用链是否可达
+#### gc roots
+在Java中，可作为 GC Root 的对象包括以下几种：
+- 虚拟机栈(栈帧中的局部变量表)中引用的对象；
+- 方法区中类静态属性引用的对象；
+- 方法区中常量引用的对象；
+- 本地方法栈中Native方法引用的对象；
+#### OopMap safePoint safeRegion
+[知乎文章：图解 OopMap、Safe Point、Safe Region](https://zhuanlan.zhihu.com/p/441867302)
+[初识Safepoint-GC中的Safepoint](https://tech.dewu.com/article?id=47)
+gc 首先需要枚举gc roots。该步会导致 STW。需尽量减少用时。使用了 OopMap机制记录寄存器、方法栈中对象引用位置。每个方法调用产生一个栈帧，每个栈帧都有一个 OopMap。在到达 safe point 点时会更新 OopMap。
+gc 线程需要等待所有用户线程都到达 safe point或者处于 safe region才开始进行下一步。
+处于 safe region 的线程在被唤醒后，需要判断是否已经完成枚举根节点，如没有完成需要保持暂停。
 
-　　可达性分析算法是通过判断对象的引用链是否可达来决定对象是否可以被回收。
+#### 跨代引用
+card table 卡表
+记录老年代哪些区域存在指向新生代对象的引用。
 
-　　可达性分析算法是从离散数学中的图论引入的，程序把所有的引用关系看作一张图，通过一系列的名为 “GC Roots” 的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为引用链（Reference Chain）。当一个对象到 GC Roots 没有任何引用链相连（用图论的话来说就是从 GC Roots 到这个对象不可达）时，则证明此对象是不可用的，如下图所示。在Java中，可作为 GC Root 的对象包括以下几种：
+写屏障 write barrier
+类似Java切面编程，在对象引用赋值操作前后添加额外逻辑，更新卡表
 
-虚拟机栈(栈帧中的局部变量表)中引用的对象；
-
-方法区中类静态属性引用的对象；
-
-方法区中常量引用的对象；
-
-本地方法栈中Native方法引用的对象；
+#### 并发标记
+三色标记法
 
 ### 垃圾收集算法
 
@@ -255,7 +265,7 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 
 **4、分代收集算法**
 
-![](jvm.assets/1570877993043.png)
+![](assets/1570877993043.png)
 
 ### 垃圾回收器
 
@@ -269,7 +279,7 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 6. **CMS**(Concurrent Mark Sweep)收集器（**标记-清除算法**）： **老年代并行收集器**，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。
 7. G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。
 
-![](jvm.assets/1570878225270.png)
+![](assets/1570878225270.png)
 
 ### CMS 收集器（Concurrent Mark Sweep ）标记-清除算法
 
@@ -288,9 +298,9 @@ https://stackoverflow.com/questions/38597965/difference-between-resident-set-siz
 
 > -XX:+PrintGCDetails 输出GC的详细日志
 
-![](jvm.assets/1571321993174.png)
+![](assets/1571321993174.png)
 
-![](jvm.assets/1571322030517.png)
+![](assets/1571322030517.png)
 
 ### 内存分配与回收策略
 
