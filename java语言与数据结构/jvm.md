@@ -12,40 +12,28 @@
 64位系统默认在 JAVA_HOME/jre/lib/amd64/jvm.cfg
 32位在目录JAVA_HOME/jre/lib/i386/jvm.cfg
 
-### JMM有关参数
+### Jvm启动参数
+>部分参数在新jdk版本中被抛弃，需结合具体jdk版本理解。在使用g1 zgc等垃圾回收器时，新生代大小已在jvm内部动态调整
+#### 内存空间参数
 
-| 参数 | 作用       |
-| ---- | ---------- |
-| -Xmx | 堆的最大值 |
-| -Xms | 堆的初始值 |
-|      |            |
-|      |            |
+| 参数                               | 作用                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| -Xmx                             | jvm heap的最大值                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -Xms                             | jvm heap的初始值                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -Xmn                             | 设置年轻代大小，如果显式设置了例如 （`-Xmn256m`），则新生代的大小就被**固定**为该值（或附近）。**此参数优先级最高。**                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -XX:NewRatio                     | 老年代（Old Generation）与新生代（Young Generation）的**比例**。默认值通常是 `2`（在 JDK 8 及之前的 Parallel/CMS 上常见）。<br><br>- 含义：`NewRatio = n` 表示 `老年代大小 / 新生代大小 = n`。因此，`新生代大小 = 堆总大小 / (n + 1)`。<br>    <br>- 例如：堆总大小 `-Xmx1024m`，`-XX:NewRatio=2`，则新生代大小约为 `1024m / (2 + 1) = ~341m`，老年代大小约为 `1024m - 341m = 683m`（或 `341m * 2 = 682m`）。                                                                                                                                                                                                              |
+| `-XX:NewSize` / `-XX:MaxNewSize` | 分别设置新生代的初始大小和最大大小。通常 `-Xmn` 会同时设置这两个值为相同值。如果单独设置，`NewSize` 是初始值，`MaxNewSize` 是最大值（新生代可以动态调整时）。                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| -XX:SurvivorRatio                | **Eden 区与单个 Survivor 区的比例**。默认值通常是 `8`（在 JDK 8 及之前的 Parallel/CMS 上常见）。<br>- 含义：`SurvivorRatio = n` 表示 `Eden 大小 / 单个 Survivor 大小 = n`。<br>    <br>- 因此，`Eden 大小 = 新生代大小 * (n / (n + 2))`    <br><br>- `单个 Survivor 大小 = 新生代大小 / (n + 2)`<br>    <br>- 例如：新生代大小 `256m`，`-XX:SurvivorRatio=8`，则：<br>    <br>    - `Eden = 256m * (8 / (8 + 2)) = 256m * (8/10) = 204.8m`<br>        <br>    - `单个 Survivor (From/To) = 256m / (8 + 2) = 25.6m`<br>        <br>    - 验证：`204.8m (Eden) + 25.6m (From) + 25.6m (To) = 256m (New Gen)` |
+|                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
-> java -Xms3550m -Xmx3550m  -Xmn2g   -Xss128k
+#### 垃圾回收参数
+g1回收器
 
--Xms3550m:设置JVM堆初始化内存大小为3550m.默认为物理内存的1/64，最小为1M；可以指定单位，比如k、m，若不指定，则默认为字节此值可以设置与-Xmx相同,以避免每次垃圾回收完成后JVM重新分配内存.
--Xmx3550m:设置JVM堆最大可用内存为3550M.默认为物理内存的1/4或者1G，最小为2M；单位与-Xms一致。
--Xmn2g:设置年轻代大小为2G.
+| 参数                                 | 意义                                                                                                                                             |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| -XX:MaxGCPauseMillis               |                                                                                                                                                |
+| -XX:InitiatingHeapOccupancyPercent |  当堆占用率达到 `-XX:InitiatingHeapOccupancyPercent` (IHOP) 阈值（默认 45%）时，G1 会启动一个**并发标记周期**。这个周期完成后，G1 就知道了哪些 Old Region 包含最多的垃圾（Garbage-First 名字的由来）。 |
 
-The flag `Xmx` specifies the maximum memory allocation pool for a Java virtual machine (JVM), while `Xms` specifies the initial memory allocation pool.
-
-This means that your JVM will be started with `Xms` amount of memory and will be able to use a maximum of `Xmx` amount of memory. For example, starting a JVM like below will start it with 256 MB of memory and will allow the process to use up to 2048 MB of memory:
-
-```java
-java -Xms256m -Xmx2048m
-```
-
-The memory flag can also be specified in different sizes, such as kilobytes, megabytes, and so on.
-
-```java
--Xmx1024k
--Xmx512m
--Xmx8g
-```
-
-The `Xms` flag has no default value, and `Xmx` typically has a default value of 256 MB. A common use for these flags is when you encounter a `java.lang.OutOfMemoryError`.
-
-When using these settings, keep in mind that these settings are for the JVM's *heap*, and that the JVM can/will use more memory than just the size allocated to the heap.
 
 ## JVM 组件
 
@@ -331,8 +319,11 @@ card table 卡表
 ## JDK调试工具
 
 1. jps: jvm process status tool 显示所有虚拟机进程
-2. jstat: jvm statistics monitoring tool 监视虚拟机各种运行状态信息
-3. jinfo: configuration info for java 显示虚拟机配置信息
-4. jmap: memory map for java 生成虚拟机的内存转储快照（heapdump 文件）
-5. jhat: jvm heap browser 分析heapdump文件，建立http服务器，让用户在浏览器查看分析结果
-6. jstack: stack trace for java 显示虚拟机的线程快照
+2. jcmd
+	- `jcmd <pid> VM.flags`：查看最终生效的 JVM 参数
+3. jstat: jvm statistics monitoring tool 监视虚拟机各种运行状态信息
+	- `jstat -gc <pid>`：查看各内存池的实时容量（`S0C`, `S1C`, `EC`, `OC` 分别代表 Survivor0, Survivor1, Eden, Old 的 _Capacity_，单位是 KB）。`NGCMN`/`NGCMX`/`NGC` 代表新生代最小容量/最大容量/当前容量。
+4. jinfo: configuration info for java 显示虚拟机配置信息
+5. jmap: memory map for java 生成虚拟机的内存转储快照（heapdump 文件）
+6. jhat: jvm heap browser 分析heapdump文件，建立http服务器，让用户在浏览器查看分析结果
+7. jstack: stack trace for java 显示虚拟机的线程快照
